@@ -1,0 +1,56 @@
+body, header{
+	font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", sans-serif;
+	font-weight: 300;
+}
+
+h3 {
+	float: left;
+	font-weight: normal;
+}
+
+h1, h2 {
+	text-align: center;
+	font-weight: normal;
+}
+
+table {
+	margin: 0 auto;
+}
+
+td {
+	width: 200px;
+}
+
+#add {
+	margin: 0 auto;
+	width: 300px;
+}
+
+#add p {
+	display: inline-block;
+	padding-right: 10px;
+	width: 100px;
+	text-align: right;
+	margin: 10px 0;
+}
+
+#add input {
+	clear: right;
+	font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", sans-serif;
+	font-weight: 300;
+	font-size: 1em;
+}
+
+#add .split-button {
+	display: inline-block;
+	width: 120px;
+	margin: 5px;
+	padding: 5px;
+	text-align: center;
+}
+
+#add .split-button p {
+	width: 120px;
+	text-align: center;
+}
+
