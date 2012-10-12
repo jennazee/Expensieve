@@ -21,6 +21,18 @@ td {
 	width: 200px;
 }
 
+td.editing p{
+	display: none;
+}
+
+td.editing input{
+	display: block;
+}
+
+td input {
+	display: none;
+}
+
 #add {
 	margin: 0 auto;
 	width: 300px;
@@ -47,6 +59,7 @@ td {
 	margin: 5px;
 	padding: 5px;
 	text-align: center;
+	background-color: #ddd;
 }
 
 #add .split-button p {
@@ -54,3 +67,54 @@ td {
 	text-align: center;
 }
 
+#add .split-button:hover{
+	background-color: #bbb;
+	cursor: pointer;
+}
+
+#send:hover {
+	cursor: pointer;
+}
+
+.delete {
+	width:20px;
+	height:20px;
+	border-radius:50px;
+	font-size:.75em;
+	color: white;
+	text-align:center;
+	text-decoration:none;
+	background:red;
+	display: inline-block;
+	margin: 5px;
+}
+
+.delete:hover {
+	background-color: rgb(175,10,10);
+	cursor: pointer;
+}
+
+#add-button {
+	width: 130px;
+	padding: 10px;
+	margin: 10px auto;
+	background: #ddd;
+	text-align: center;
+}
+
+#add-button:hover{
+	background-color: #bbb;
+	cursor: pointer;
+}
+
+#add {
+	display: none;
+}
+
+#add.adding{
+	display: block;
+}
+
+#add-button.adding{
+	display: none;
+}
