@@ -64,23 +64,24 @@ td input {
 
 #add {
 	margin: 50px auto;
-	width: 300px;
+	width: 600px;
 	background: #CFF;
-	padding: 0px 100px 20px;
+	padding: 0 20px 20px;
 }
 
 #add p {
 	display: inline-block;
 	padding-right: 10px;
-	width: 100px;
+	width: 120px;
 	text-align: right;
-	margin: 10px 0;
+	margin: 0;
 }
 
 #add:before {
 	content: "";
 	position: relative;
 	top: -50px;
+	left: 50px;
 	border-width: 0 50px 50px;
 	border-style: solid;
 	border-color: #CFF transparent;
@@ -93,28 +94,51 @@ td input {
 	font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", sans-serif;
 	font-weight: 300;
 	font-size: 1em;
+	margin-top: 5px;
+
 }
 
-#add .split-button, #send {
+.added {
+	position: relative;
+	left: 130px;
+}
+
+.new-line {
+	margin: 10px auto;
+	width: 515px;
+}
+
+#splitEqual, #send {
 	display: inline-block;
-	width: 120px;
-	margin: 5px;
+	clear: both;
+	width: 135px;
+	margin: 0 auto;
 	padding: 5px;
 	text-align: center;
 	background-color: #ddd;
 }
 
-#add .split-button p, #send p {
+#splitEqual p, #send p {
 	width: 120px;
 	text-align: center;
+	padding: 10px;
 }
 
-#add .split-button:hover, #send:hover{
+#splitEqual:hover, #send:hover{
 	background-color: #bbb;
 	cursor: pointer;
 }
 
-.delete {
+.new-share {
+	margin-right: 15px;
+}
+
+.added .new-share {
+	margin-right: 10px;
+}
+
+
+.delete, .delete-add {
 	width:20px;
 	height:20px;
 	border-radius:50px;
@@ -140,7 +164,7 @@ td input {
 	text-align: center;
 }
 
-#add-button:hover{
+#add-button:hover, .add-share:hover{
 	background-color: #bbb;
 	cursor: pointer;
 }
@@ -155,4 +179,17 @@ td input {
 
 #add-button.adding{
 	display: none;
+}
+
+.add-share {
+	width:20px;
+	height:20px;
+	border-radius:50px;
+	font-size:.75em;
+	color: black;
+	text-align:center;
+	text-decoration:none;
+	background:#ddd;
+	display: inline-block;
+	margin-left: 5px;
 }

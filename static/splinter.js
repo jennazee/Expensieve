@@ -130,18 +130,12 @@ window.ReceiptView = Backbone.View.extend({
     },
 
     clear: function() {
-    	console.log('delete')
     	this.model.remove();
     }
 })
 
 window.AppView = Backbone.View.extend({
 	el: $('#wrapper'),
-
-	// events: {
- //      "click #send" : "addToDB",
- //      "click #add-button" : "showAdd"
- //    },
 
     initialize: function() {
     	_.bindAll(this, 'addOne', 'addAll', 'render');
@@ -173,15 +167,22 @@ window.App = new AppView;
 $(document).ready(function(){
 
 
-$('#send').click(function(){
-    	console.log('send')
+	$('#send').click(function(){
+    	var shared = [];
+    	var shares = [];
+    	for (i=0; i<$('.new-share').length; i++){
+    		shared.push($($('.new-share')[i]).val());
+    	}
 	  	receipts.create({
 	    	'name': $('#new-name').val(),
 	    	'amount': $('#new-amount').val(),
-	    	'shared': $('#new-share').val(),
-	    	'shares': ['ummmm']
+	    	'shared': shared,
+	    	'shares': shares
 	  	});
-	    $('#add').children('input').val('');
+	    $('#new-name').val('');
+	    $('#new-amount').val('');
+	    $('.new-share').val('');
+	    $('.share').val('');
 	    $('#add-button').removeClass('adding');
 	    $('#add').removeClass('adding');
 	});
@@ -191,15 +192,34 @@ $('#send').click(function(){
 		$('#add-button').addClass('adding');
 
 		$('#splitEqual').click(function(){
-			var numSplit = $('#new-share').val().split(',').length+1;
+			var numSplit = $('.new-share').length+1;
 			var amount = $('#new-amount').val();
-			var splits = [];
-			var total = 0;
+			var amtAlloc = 0;
+
 			for (i=0; i<numSplit; i++){
-				split = Math.round(amount/numSplit*Math.pow(10,2))/Math.pow(10,2);
-				splits.push(split)
-				total = total + split
+				if ($($('.share')[i]).val()!== ''){
+					console.log('contents')
+					amtAlloc = amtAlloc + $($('.share')[i]).val()
+				}
+			}
+
+			console.log(amtAlloc)
+
+			var split = Math.round((amount-amtAlloc)/numSplit*Math.pow(10,2))/Math.pow(10,2);
+
+			for (i=0; i<numSplit; i++){
+				if ($($('.share')[i]).val()=== ''){
+					$($('.share')[i]).val(split);
+				}
 			}
 		});
 	});
+
+	$('.add-share').click(function(){
+		$("<div class='added'> <input class='new-share' type='text'/> <span>$</span><input type='number' class='share' /><span class='delete-add'> x </span></div>").insertAfter('.add-share')
+		
+		$('.delete-add').click(function(){
+			$(this).parent().remove()
+		})
+	})
 });

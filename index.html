@@ -25,16 +25,16 @@
 				<tr id='label-box'>
 					<td><h3>Who Paid?</h3></td>
 					<td><h3>How Much?</h3></td>
-					<td><h3>Who Owes?</h3></td>
+					<td><h3>Who Owes What?</h3></td>
 				</tr>
 			</table>
 			<div id='add-button'><span>Add a Receipt</span></div>
 			<div id='add'>
-				<div class='new-line'><p>Who Paid:</p><input id='new-name' type='text'/></div>
-				<div class='new-line'><p>How Much:</p><input id='new-amount' type='text'/></div>
-				<div class='new-line'><p>Who Owes:</p><input id='new-share' type='text'/><span class='add-share'>+</span></div>
-				<div id='splitEqual' class='split-button'><p>Split Equally</p></div>
-				<div id='splitUnequal' class='split-button'><p>Split Unequally</p></div>
+				<div id='new-payer' class='new-line'><p>Who Paid:</p><input id='new-name' type='text'/></div>
+				<div id='new-amt' class='new-line'><p>How Much:</p><input id='new-amount' type='text'/></div>
+				<div id='new-splits' class='new-line'><p>Who Owes What:</p><input class='new-share' type='text'/><span>$</span><input type='number' class='share' /><span class='add-share'>+</span></div>
+
+				<div id='splitEqual'><p>Split Remaining Balance Equally</p></div>
 				<div id='send'><p>Add</p></div>
 			</div>
 		</div>
