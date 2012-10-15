@@ -20,12 +20,15 @@ window.ReceiptView = Backbone.View.extend({
 	className: 'expenseLine',
 	model: Receipt,
 
-	template: _.template("<td class='name-box'><p class='name'></p> <input class='name-edit' type='text' /></td>   <td class='amt-box'><p class='amount'></p><input class='amount-edit' type='number' /></td>   <td class='shared-box'><p class='shared'></p><input class='shared-edit' type='text' /></td>   <td><span class='delete'> x </span></td>"),
+	template: _.template("<td class='name-box'><p class='name'></p> <input class='name-edit' type='text' /></td>   <td class='amt-box'><p class='amount'></p><input class='amount-edit' type='number' /></td>   <td class='shared-box'><p class='shared'></p><input class='shared-edit' type='text' /></td>   <td class='delcell'><span class='delete'> x </span></td>"),
 
 	events: {
       	"click .name": "editWho",
       	"click .amount": "editAmt",
       	"click .shared": "editShared",
+
+      	"mouseover": 'hover',
+      	"mouseout": 'unhover',
 
       	"click .delete": "clear",
 
@@ -70,6 +73,13 @@ window.ReceiptView = Backbone.View.extend({
       	return this;
     },
 
+    hover: function() {
+    	$(this.el).addClass('hovered');
+    },
+
+    unhover: function() {
+    	$(this.el).removeClass('hovered');
+    },
 	
 	editWho: function() {
 		$(this.el).children('.name-box').addClass("editing");
@@ -181,23 +191,15 @@ $('#send').click(function(){
 		$('#add-button').addClass('adding');
 
 		$('#splitEqual').click(function(){
-			console.log('equal')
 			var numSplit = $('#new-share').val().split(',').length+1;
-			var amount = $('new-amount').val();
+			var amount = $('#new-amount').val();
 			var splits = [];
-			var total;
+			var total = 0;
 			for (i=0; i<numSplit; i++){
 				split = Math.round(amount/numSplit*Math.pow(10,2))/Math.pow(10,2);
 				splits.push(split)
-				total+=split
+				total = total + split
 			}
-			console.log(splits)
-			//var index = 0
-			// while(total!==amount){
-			// 	splits[index]+=0.01
-			// 	total+=0.01
-			// 	console.log('going')
-			// }
 		});
 	});
 });

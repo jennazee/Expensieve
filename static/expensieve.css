@@ -1,11 +1,17 @@
 body, header{
 	font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", sans-serif;
 	font-weight: 300;
+	background-color: #f2f2f2;
+	margin: 0;
+	padding: 0;
 }
 
 h3 {
 	float: left;
 	font-weight: normal;
+	text-align: center;
+	width: 200px;
+	padding: 0 20px;
 }
 
 h1, h2 {
@@ -13,12 +19,30 @@ h1, h2 {
 	font-weight: normal;
 }
 
+h1 {
+	font-size: 3em;
+}
+
 table {
 	margin: 0 auto;
+	background-color: white;
+	border-radius: 10px;
+	box-shadow: 0 0 15px 5px #E3E3E3;
+	padding: 20px;
+	width: 800px;
 }
 
 td {
 	width: 200px;
+	text-align: center;
+}
+
+tr.hovered {
+	background-color: #f2f2f2;
+}
+
+td.delcell {
+	width: 25px;
 }
 
 td.editing p{
@@ -31,11 +55,18 @@ td.editing input{
 
 td input {
 	display: none;
+	margin: 0 auto;
+	text-align: center;
+	font-size: 1em;
+	font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", sans-serif;
+	font-weight: 300;
 }
 
 #add {
-	margin: 0 auto;
+	margin: 50px auto;
 	width: 300px;
+	background: #CFF;
+	padding: 0px 100px 20px;
 }
 
 #add p {
@@ -46,6 +77,17 @@ td input {
 	margin: 10px 0;
 }
 
+#add:before {
+	content: "";
+	position: relative;
+	top: -50px;
+	border-width: 0 50px 50px;
+	border-style: solid;
+	border-color: #CFF transparent;
+	display: block;
+	width: 0;
+}
+
 #add input {
 	clear: right;
 	font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", sans-serif;
@@ -53,7 +95,7 @@ td input {
 	font-size: 1em;
 }
 
-#add .split-button {
+#add .split-button, #send {
 	display: inline-block;
 	width: 120px;
 	margin: 5px;
@@ -62,17 +104,13 @@ td input {
 	background-color: #ddd;
 }
 
-#add .split-button p {
+#add .split-button p, #send p {
 	width: 120px;
 	text-align: center;
 }
 
-#add .split-button:hover{
+#add .split-button:hover, #send:hover{
 	background-color: #bbb;
-	cursor: pointer;
-}
-
-#send:hover {
 	cursor: pointer;
 }
 
