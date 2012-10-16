@@ -45,7 +45,6 @@ window.ReceiptView = Backbone.View.extend({
       _.bindAll(this, 'render', 'exitName', 'exitAmount', 'exitShared');
       this.model.bind('change', this.render);
       this.model.view = this;
-      this.category = this.model.get('category');
     },
 
 	setContent: function() {
@@ -137,6 +136,10 @@ window.ReceiptView = Backbone.View.extend({
 window.AppView = Backbone.View.extend({
 	el: $('#wrapper'),
 
+	// events: {
+	// 	'click #sort' : 'sortItOut'
+	// },
+
     initialize: function() {
     	_.bindAll(this, 'addOne', 'addAll', 'render');
     
@@ -152,7 +155,7 @@ window.AppView = Backbone.View.extend({
     },
 
     addOne: function(item) {
-      	var element = new ReceiptView({model:item}).render().el;
+      	var element = new ReceiptView({model: item}).render().el;
       	$("#expense-list").append(element);
     },
     
@@ -170,46 +173,102 @@ $(document).ready(function(){
 	$('#send').click(function(){
     	var shared = [];
     	var shares = [];
+    	var total = 0;
     	for (i=0; i<$('.new-share').length; i++){
+    		total+=parseFloat($($('.share')[i]).val())
+    		shares.push(parseFloat($($('.share')[i]).val()));
     		shared.push($($('.new-share')[i]).val());
     	}
-	  	receipts.create({
-	    	'name': $('#new-name').val(),
-	    	'amount': $('#new-amount').val(),
-	    	'shared': shared,
-	    	'shares': shares
-	  	});
-	    $('#new-name').val('');
-	    $('#new-amount').val('');
-	    $('.new-share').val('');
-	    $('.share').val('');
-	    $('#add-button').removeClass('adding');
-	    $('#add').removeClass('adding');
+
+    	total = Math.round(total*Math.pow(10,2))/Math.pow(10,2);
+
+    	if (total === parseFloat($('#new-amount').val())){
+		  	receipts.create({
+		    	'name': $('#new-name').val(),
+		    	'amount': $('#new-amount').val(),
+		    	'shared': shared,
+		    	'shares': shares
+		  	});
+		    $('#new-name').val('');
+		    $('#new-amount').val('');
+		    $('.new-share').val('');
+		    $('.share').val('');
+		    $('#add-button').removeClass('adding');
+		    $('#add').removeClass('adding');
+		}
+		else if (total < $('#new-amount').val()){
+			alert("You haven't quite covered the total.")
+		}
+		else {
+			alert("The sum of the splits is greater than the amount paid.")
+		}
 	});
+
+	$('#sort').click(function(){
+    	console.log('click')
+    	var owed = {}
+    	receipts.each(function(el){
+    		console.log(el)
+    		var name = el.model.get('name');
+			var amount = el.model.get('amount');
+			var shared = el.model.get('shared');
+			var shares = el.model.get('shares');
+
+			if (!owed.name){
+				owed[name] = {} 
+			}
+			for (i=0; i<shared.length; i++){
+				if (name!==shared[i]){
+					if (owed[name][shared[i]]){
+						owed[name][shared[i]]+=shares[i]
+					}
+					else {
+						owed[name][shared[i]]=shares[i]
+					}	
+				}
+			}
+    	})
+    	console.log(owed)
+    });
 
 	$('#add-button').click(function(){
 		$('#add').addClass('adding');
 		$('#add-button').addClass('adding');
 
 		$('#splitEqual').click(function(){
-			var numSplit = $('.new-share').length+1;
-			var amount = $('#new-amount').val();
+			var numSplit = 0;
+			var amount = parseFloat($('#new-amount').val());
 			var amtAlloc = 0;
 
-			for (i=0; i<numSplit; i++){
+			for (i=0; i<$('.new-share').length; i++){
 				if ($($('.share')[i]).val()!== ''){
-					console.log('contents')
-					amtAlloc = amtAlloc + $($('.share')[i]).val()
+					amtAlloc+=parseFloat($($('.share')[i]).val())
+				}
+				else {
+					numSplit++;
 				}
 			}
-
-			console.log(amtAlloc)
-
+			var total = amtAlloc;
 			var split = Math.round((amount-amtAlloc)/numSplit*Math.pow(10,2))/Math.pow(10,2);
 
-			for (i=0; i<numSplit; i++){
+			//difference between the total created by just splitting and the real total
+			// if negative, i need to nudge some of the splits down
+			// if positive, i need to nudge some of the splits up
+			var dis = Math.round((amount - (split * numSplit + amtAlloc))*Math.pow(10,2))/Math.pow(10,2)
+
+			for (i=0; i<$('.new-share').length; i++){
 				if ($($('.share')[i]).val()=== ''){
-					$($('.share')[i]).val(split);
+					if (dis < 0){
+						$($('.share')[i]).val(split-0.01);
+						dis = Math.round((dis+0.01)*Math.pow(10,2))/Math.pow(10,2)
+					}
+					else if (dis > 0) {
+						$($('.share')[i]).val(split+0.01);
+						dis = Math.round((dis-0.01)*Math.pow(10,2))/Math.pow(10,2)
+					}
+					else {
+						$($('.share')[i]).val(split);
+					}
 				}
 			}
 		});

@@ -151,7 +151,7 @@ td input {
 	margin: 5px;
 }
 
-.delete:hover {
+.delete:hover, .delete-add:hover {
 	background-color: rgb(175,10,10);
 	cursor: pointer;
 }
