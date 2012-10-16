@@ -136,9 +136,9 @@ window.ReceiptView = Backbone.View.extend({
 window.AppView = Backbone.View.extend({
 	el: $('#wrapper'),
 
-	// events: {
-	// 	'click #sort' : 'sortItOut'
-	// },
+	events: {
+		'click #sort' : 'sortItOut'
+	},
 
     initialize: function() {
     	_.bindAll(this, 'addOne', 'addAll', 'render');
@@ -153,6 +153,33 @@ window.AppView = Backbone.View.extend({
       		{success: this.addAll}
       	);
     },
+
+    sortItOut: function() {
+    	console.log('click')
+    	var owed = {}
+    	_.each(function(receipts, el){
+    		console.log(el)
+    		var name = el.model.get('name');
+			var amount = el.model.get('amount');
+			var shared = el.model.get('shared');
+			var shares = el.model.get('shares');
+
+			if (!owed.name){
+				owed[name] = {} 
+			}
+			for (i=0; i<shared.length; i++){
+				if (name!==shared[i]){
+					if (owed[name][shared[i]]){
+						owed[name][shared[i]]+=shares[i]
+					}
+					else {
+						owed[name][shared[i]]=shares[i]
+					}	
+				}
+			}
+    	})
+    	console.log(owed)
+    }
 
     addOne: function(item) {
       	var element = new ReceiptView({model: item}).render().el;
@@ -204,32 +231,32 @@ $(document).ready(function(){
 		}
 	});
 
-	$('#sort').click(function(){
-    	console.log('click')
-    	var owed = {}
-    	receipts.each(function(el){
-    		console.log(el)
-    		var name = el.model.get('name');
-			var amount = el.model.get('amount');
-			var shared = el.model.get('shared');
-			var shares = el.model.get('shares');
+	// $('#sort').click(function(){
+ //    	console.log('click')
+ //    	var owed = {}
+ //    	_.each(function(receipts, el){
+ //    		console.log(el)
+ //    		var name = el.model.get('name');
+	// 		var amount = el.model.get('amount');
+	// 		var shared = el.model.get('shared');
+	// 		var shares = el.model.get('shares');
 
-			if (!owed.name){
-				owed[name] = {} 
-			}
-			for (i=0; i<shared.length; i++){
-				if (name!==shared[i]){
-					if (owed[name][shared[i]]){
-						owed[name][shared[i]]+=shares[i]
-					}
-					else {
-						owed[name][shared[i]]=shares[i]
-					}	
-				}
-			}
-    	})
-    	console.log(owed)
-    });
+	// 		if (!owed.name){
+	// 			owed[name] = {} 
+	// 		}
+	// 		for (i=0; i<shared.length; i++){
+	// 			if (name!==shared[i]){
+	// 				if (owed[name][shared[i]]){
+	// 					owed[name][shared[i]]+=shares[i]
+	// 				}
+	// 				else {
+	// 					owed[name][shared[i]]=shares[i]
+	// 				}	
+	// 			}
+	// 		}
+ //    	})
+ //    	console.log(owed)
+ //    });
 
 	$('#add-button').click(function(){
 		$('#add').addClass('adding');
