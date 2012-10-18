@@ -23,7 +23,7 @@ h1 {
 	font-size: 3em;
 }
 
-table {
+table, #sifted {
 	margin: 0 auto;
 	background-color: white;
 	border-radius: 10px;
@@ -205,4 +205,23 @@ td input {
 
 .whoShared, .whoShared-edit {
 	clear: left;
+}
+
+#sift {
+	width: 160px;
+	padding: 10px;
+	margin: 10px auto 30px;
+	background: #ddd;
+	text-align: center;
+	font-size: 1.75em;
+
+}
+
+#sifted {
+	margin: 20px auto;
+	text-align: center
+}
+
+.hidden {
+	display: none;
 }

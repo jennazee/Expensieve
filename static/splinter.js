@@ -246,12 +246,11 @@ $(document).ready(function(){
 		}
 	});
 
-	$('#sort').click(function(){
+	$('#sift').click(function(){
     	console.log('click')
     	var owed = {}
     	console.log(receipts)
     	receipts.each(function(entry){
-	   		console.log(entry)
     		var name = entry.get('name');
 			var amount = entry.get('amount');
 			var shares = entry.get('shares');
@@ -291,7 +290,15 @@ $(document).ready(function(){
 				}
 			})
     	})
-		console.log(owed)
+		$('#sifted').removeClass('hidden')
+		$('#sifted').html('<h2>The Rundown</h2>')
+		$.each(owed, function(paid, shares){
+			$.each(shares, function(who, amt){
+				$('#sifted').append('<p>' + who + ' owes ' + paid + ' $' + amt + '</p>')
+			})
+			
+		})
+		
     });
 
 	$('#add-button').click(function(){
