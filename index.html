@@ -20,6 +20,34 @@
 	</header>
 
 	<body>
+		<div id="fb-root"></div>
+
+		<!-- FACEBOOK LOGIN JUNK -->
+		<script>
+		  window.fbAsyncInit = function() {
+		    // init the FB JS SDK
+		    FB.init({
+		      appId      : '193237334145655', // App ID from the App Dashboard
+		      //channelUrl : '127.0.0.1:1337/channel.html', // Channel File for x-domain communication
+		      status     : true, // check the login status upon init?
+		      cookie     : true, // set sessions cookies to allow your server to access the session?
+		      xfbml      : true  // parse XFBML tags on this page?
+		    });
+
+		    // Additional initialization code such as adding Event Listeners goes here
+
+		  };
+
+		  // Load the SDK's source Asynchronously
+		  (function(d){
+		     var js, id = 'facebook-jssdk', ref = d.getElementsByTagName('script')[0];
+		     if (d.getElementById(id)) {return;}
+		     js = d.createElement('script'); js.id = id; js.async = true;
+		     js.src = "//connect.facebook.net/en_US/all.js";
+		     ref.parentNode.insertBefore(js, ref);
+		   }(document));
+		</script>
+
 		<div id='wrapper'>
 			<table id='expense-list'>
 				<tr id='label-box'>
@@ -37,7 +65,7 @@
 				<div id='splitEqual'><p>Split Remaining Balance Equally</p></div>
 				<div id='send'><p>Add</p></div>
 			</div>
-			<a href='#' id='sort'>Sort it Out!</a>
+			<div id='sort'>Sort it Out!</div>
 		</div>
 	</body>
 </html>

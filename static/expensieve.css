@@ -45,11 +45,11 @@ td.delcell {
 	width: 25px;
 }
 
-td.editing p{
+td.editing p, td.p.shared-editing{
 	display: none;
 }
 
-td.editing input{
+td.editing input, td.input.shared-editing{
 	display: block;
 }
 
@@ -192,4 +192,17 @@ td input {
 	background:#ddd;
 	display: inline-block;
 	margin-left: 5px;
+}
+
+.whoShared, .amtShared, .whoShared-edit, .amtShared-edit {
+	float: left;
+	padding: 0 20px;
+}
+
+.amtShared, .amtShared-edit {
+	clear: right;
+}
+
+.whoShared, .whoShared-edit {
+	clear: left;
 }

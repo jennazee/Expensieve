@@ -20,12 +20,15 @@ window.ReceiptView = Backbone.View.extend({
 	className: 'expenseLine',
 	model: Receipt,
 
-	template: _.template("<td class='name-box'><p class='name'></p> <input class='name-edit' type='text' /></td>   <td class='amt-box'><p class='amount'></p><input class='amount-edit' type='number' /></td>   <td class='shared-box'><p class='shared'></p><input class='shared-edit' type='text' /></td>   <td class='delcell'><span class='delete'> x </span></td>"),
+	template: _.template("<td class='name-box'><p class='name'></p> <input class='name-edit' type='text' /></td>   <td class='amt-box'><p class='amount'></p><input class='amount-edit' type='number' /></td>   <td class='shares-box'> </td>   <td class='delcell'><span class='delete'> x </span></td>"),
+	whoShareTemp: _.template("<p class='whoShared'></p><input class='whoShared-edit' type='text' />"),
+	amtShareTemp: _.template("<p class='amtShared'></p><input class='amtShared-edit' type='text' />"),
 
 	events: {
       	"click .name": "editWho",
       	"click .amount": "editAmt",
-      	"click .shared": "editShared",
+      	"click .whoShared": "editWhoShared",
+      	"click .amtShared": "editAmtShared",
 
       	"mouseover": 'hover',
       	"mouseout": 'unhover',
@@ -34,15 +37,17 @@ window.ReceiptView = Backbone.View.extend({
 
       	"keypress .name-edit": "updateName",
       	"keypress .amount-edit": "updateAmt",
-      	"keypress .shared-edit": "updateShared",
+      	"keypress .whoShared-edit": "updateWhoShared",
+      	"keypress .amtShared-edit": "updateAmtShared",
 
       	"blur .name-edit": 'exitName',
       	"blur .amount-edit": 'exitAmount',
-      	"blur .shared-edit": 'exitShared',
+      	"blur .whoShared-edit": 'exitWhoShared',
+      	"blur .amtShared-edit": 'exitAmtShared',
 	},
 
 	initialize: function() {
-      _.bindAll(this, 'render', 'exitName', 'exitAmount', 'exitShared');
+      _.bindAll(this, 'render', 'exitName', 'exitAmount', 'exitWhoShared', 'exitAmtShared');
       this.model.bind('change', this.render);
       this.model.view = this;
     },
@@ -50,7 +55,7 @@ window.ReceiptView = Backbone.View.extend({
 	setContent: function() {
 		var name = this.model.get('name');
 		var amount = this.model.get('amount');
-		var shared = this.model.get('shared');
+		var shares = this.model.get('shares');
 
 		this.$('.name').text(name);
 		this.$('.name-edit').val(name)
@@ -58,12 +63,21 @@ window.ReceiptView = Backbone.View.extend({
 		this.$('.amount').text(amount);
 		this.$('.amount-edit').val(amount)
 
-		this.$('.shared').text(shared);
-		this.$('.shared-edit').val(shared)
+		var sBox = this.$('.shares-box')
+		var pToAdd = this.whoShareTemp()
+		var amtToAdd = this.amtShareTemp()
+
+		$.each(shares, function(k,v){
+			var person = $(pToAdd).text(k)
+			var amt = $(amtToAdd).text(v)
+			$(sBox).append(person)
+			$(sBox).append(amt)
+		})
 
 		this.nameInput = this.$('.name-edit');
 		this.amtInput = this.$('.amount-edit');
-		this.shareInput = this.$('.shared-edit');
+		this.whoShareInput = this.$('.whoShared-edit');
+		this.amtShareInput = this.$('.amtShared-edit');
 	},
   
     render: function() {
@@ -80,6 +94,7 @@ window.ReceiptView = Backbone.View.extend({
     	$(this.el).removeClass('hovered');
     },
 	
+	//methods for editing the contents of the page when clicked
 	editWho: function() {
 		$(this.el).children('.name-box').addClass("editing");
 		this.nameInput.focus();
@@ -90,11 +105,21 @@ window.ReceiptView = Backbone.View.extend({
 		this.amtInput.focus();
 	},
 
-	editShared: function() {
-		$(this.el).children('.shared-box').addClass("editing");
-		this.shareInput.focus();
+	editWhoShared: function() {
+		console.log('click!')
+		$(this.el).children('.shares-box').children('.whoShared').addClass(".shared-editing");
+		$(this.el).children('.shares-box').children('.whoShared-edit').addClass(".shared-editing");
+		this.whoShareInput.focus();
+	},
+
+	editAmtShared: function() {
+		console.log('click!')
+		$(this.el).children('.shares-box').children('.amtShared').addClass(".shared-editing");
+		$(this.el).children('.shares-box').children('.amtShared-edit').addClass(".shared-editing");
+		this.amtShareInput.focus();
 	},
 	
+	//methods for saving the edited contents of the page
 	exitName: function() {
 		$(this.el).children('.name-box').removeClass("editing");
 		this.model.save({'name': this.nameInput.val()});
@@ -105,11 +130,27 @@ window.ReceiptView = Backbone.View.extend({
 		this.model.save({'amount': this.amtInput.val()});
 	},
 
-	exitShared: function() {
-		$(this.el).children('.shared-box').removeClass("editing");
-		this.model.save({'shared': this.shareInput.val()});
+	exitWhoShared: function() {
+		$(this.el).children('.shares-box').children('.whoShared').removeClass("editing");
+		$(this.el).children('.shares-box').children('.whoShared-edit').removeClass("editing");
+		this.model.save({'shares': this.gatherShares});
 	},
 
+	exitAmtShared: function() {
+		$(this.el).children('.shares-box').children('.amtShared').removeClass("editing");
+		$(this.el).children('.shares-box').children('.amtShared-edit').removeClass("editing");
+		this.model.save({'shares': this.gatherShares});
+	},
+
+	//helper method for gathering all the information that goes in a model's 'shares' object
+	gatherShares: function(){
+		var shares = {}
+		$.each(this.$('.shares-box'), function(el){
+			shares[el.$('.whoShared-edit').val()] = el.$('.amtShared-edit').val()
+		});
+	},
+
+	//methods for exiting edited content, delegating to save it
 	updateName: function(e) {
 		if (e.keyCode === 13){
       		this.exitName();
@@ -122,12 +163,19 @@ window.ReceiptView = Backbone.View.extend({
       	}
     },
 
-    updateShared: function(e) {
+    updateWhoShared: function(e) {
 		if (e.keyCode === 13){
-      		this.exitShared();
+      		this.exitWhoShared();
       	}
     },
 
+    updateAmtShared: function(e) {
+		if (e.keyCode === 13){
+      		this.exitAmtShared();
+      	}
+    },
+
+    //deletes an entry
     clear: function() {
     	this.model.remove();
     }
@@ -135,10 +183,6 @@ window.ReceiptView = Backbone.View.extend({
 
 window.AppView = Backbone.View.extend({
 	el: $('#wrapper'),
-
-	events: {
-		'click #sort' : 'sortItOut'
-	},
 
     initialize: function() {
     	_.bindAll(this, 'addOne', 'addAll', 'render');
@@ -153,33 +197,6 @@ window.AppView = Backbone.View.extend({
       		{success: this.addAll}
       	);
     },
-
-    sortItOut: function() {
-    	console.log('click')
-    	var owed = {}
-    	_.each(function(receipts, el){
-    		console.log(el)
-    		var name = el.model.get('name');
-			var amount = el.model.get('amount');
-			var shared = el.model.get('shared');
-			var shares = el.model.get('shares');
-
-			if (!owed.name){
-				owed[name] = {} 
-			}
-			for (i=0; i<shared.length; i++){
-				if (name!==shared[i]){
-					if (owed[name][shared[i]]){
-						owed[name][shared[i]]+=shares[i]
-					}
-					else {
-						owed[name][shared[i]]=shares[i]
-					}	
-				}
-			}
-    	})
-    	console.log(owed)
-    }
 
     addOne: function(item) {
       	var element = new ReceiptView({model: item}).render().el;
@@ -198,13 +215,11 @@ $(document).ready(function(){
 
 
 	$('#send').click(function(){
-    	var shared = [];
-    	var shares = [];
+    	var shares = {};
     	var total = 0;
     	for (i=0; i<$('.new-share').length; i++){
     		total+=parseFloat($($('.share')[i]).val())
-    		shares.push(parseFloat($($('.share')[i]).val()));
-    		shared.push($($('.new-share')[i]).val());
+    		shares[$($('.new-share')[i]).val()]= parseFloat($($('.share')[i]).val());
     	}
 
     	total = Math.round(total*Math.pow(10,2))/Math.pow(10,2);
@@ -213,13 +228,13 @@ $(document).ready(function(){
 		  	receipts.create({
 		    	'name': $('#new-name').val(),
 		    	'amount': $('#new-amount').val(),
-		    	'shared': shared,
 		    	'shares': shares
 		  	});
 		    $('#new-name').val('');
 		    $('#new-amount').val('');
 		    $('.new-share').val('');
 		    $('.share').val('');
+		    $('.added').remove()
 		    $('#add-button').removeClass('adding');
 		    $('#add').removeClass('adding');
 		}
@@ -231,32 +246,53 @@ $(document).ready(function(){
 		}
 	});
 
-	// $('#sort').click(function(){
- //    	console.log('click')
- //    	var owed = {}
- //    	_.each(function(receipts, el){
- //    		console.log(el)
- //    		var name = el.model.get('name');
-	// 		var amount = el.model.get('amount');
-	// 		var shared = el.model.get('shared');
-	// 		var shares = el.model.get('shares');
+	$('#sort').click(function(){
+    	console.log('click')
+    	var owed = {}
+    	console.log(receipts)
+    	receipts.each(function(entry){
+	   		console.log(entry)
+    		var name = entry.get('name');
+			var amount = entry.get('amount');
+			var shares = entry.get('shares');
 
-	// 		if (!owed.name){
-	// 			owed[name] = {} 
-	// 		}
-	// 		for (i=0; i<shared.length; i++){
-	// 			if (name!==shared[i]){
-	// 				if (owed[name][shared[i]]){
-	// 					owed[name][shared[i]]+=shares[i]
-	// 				}
-	// 				else {
-	// 					owed[name][shared[i]]=shares[i]
-	// 				}	
-	// 			}
-	// 		}
- //    	})
- //    	console.log(owed)
- //    });
+			//if the person who paid doesn't already have a 'tab', open one
+			if (!owed[name]){
+				owed[name] = {} 
+			}
+			//for each share of the receipt
+			$.each(shares, function(key, val){
+				//disregard the person's share
+				if (name !== key){
+					//if the current person owes the current sharer money already
+					if (owed[key]){
+						if (owed[key][name]){
+							//if the debt is higher than the current amount to be owed, just credit that amount to the existing 
+							if (owed[key][name]>val){
+								owed[key][name]-=val
+							}
+							//if the debt is lower than the current amount to be owed, adjust the current
+							else if (owed[key][name]<val){
+								owed[name][key] = val - owed[key][name]
+							}
+							//otherwise, they are equal. Yay!
+							else {
+								owed[key][name] = null
+							}
+						}
+					}
+					else if (owed[name][key]){
+						owed[name][key]+=val
+					}
+					//no previous owing relationship
+					else {
+						owed[name][key] = val
+					}
+				}
+			})
+    	})
+		console.log(owed)
+    });
 
 	$('#add-button').click(function(){
 		$('#add').addClass('adding');
