@@ -21,14 +21,16 @@ window.ReceiptView = Backbone.View.extend({
 	model: Receipt,
 
 	template: _.template("<td class='name-box'><p class='name'></p> <input class='name-edit' type='text' /></td>   <td class='amt-box'><p class='amount'></p><input class='amount-edit' type='number' /></td>   <td class='shares-box'> </td>   <td class='delcell'><span class='delete'> x </span></td>"),
-	whoShareTemp: _.template("<p class='whoShared'></p><input class='whoShared-edit' type='text' />"),
-	amtShareTemp: _.template("<p class='amtShared'></p><input class='amtShared-edit' type='text' />"),
+	whoShareTextTemp: _.template("<p class='whoShared'></p>"),
+	whoShareInputTemp: _.template("<input class='whoShared-edit' type='text' />"),
+	amtShareTextTemp: _.template("<p class='amtShared'></p>"),
+	amtShareInputTemp: _.template("<input class='amtShared-edit' type='text' />"),
 
 	events: {
       	"click .name": "editWho",
       	"click .amount": "editAmt",
-      	"click .whoShared": "editWhoShared",
-      	"click .amtShared": "editAmtShared",
+      	// "click .whoShared": "editWhoShared",
+      	// "click .amtShared": "editAmtShared",
 
       	"mouseover": 'hover',
       	"mouseout": 'unhover',
@@ -64,14 +66,21 @@ window.ReceiptView = Backbone.View.extend({
 		this.$('.amount-edit').val(amount)
 
 		var sBox = this.$('.shares-box')
-		var pToAdd = this.whoShareTemp()
-		var amtToAdd = this.amtShareTemp()
+		var personPToAdd = this.whoShareTextTemp()
+		var amtPToAdd = this.amtShareTextTemp()
+		var personInputToAdd = this.whoShareInputTemp()
+		var amtInputToAdd = this.amtShareInputTemp()
 
 		$.each(shares, function(k,v){
-			var person = $(pToAdd).text(k)
-			var amt = $(amtToAdd).text(v)
-			$(sBox).append(person)
-			$(sBox).append(amt)
+			var personP = $(personPToAdd).text(k)
+			var personInput = $(personInputToAdd).val(k)
+			var amtP = $(amtPToAdd).text(v)
+			var amtInput = $(amtInputToAdd).val(v)
+			$(sBox).append('<div></div>')
+			$(sBox).append(personP)
+			$(sBox).append(personInput)
+			$(sBox).append(amtP)
+			$(sBox).append(amtInput)
 		})
 
 		this.nameInput = this.$('.name-edit');
@@ -105,19 +114,17 @@ window.ReceiptView = Backbone.View.extend({
 		this.amtInput.focus();
 	},
 
-	editWhoShared: function() {
-		console.log('click!')
-		$(this.el).children('.shares-box').children('.whoShared').addClass(".shared-editing");
-		$(this.el).children('.shares-box').children('.whoShared-edit').addClass(".shared-editing");
-		this.whoShareInput.focus();
-	},
+	// editWhoShared: function() {
+	// 	$(this.el).children('.shares-box').children('.whoShared').addClass("shared-editing");
+	// 	$(this.el).children('.shares-box').children('.whoShared-edit').addClass("shared-editing");
+	// 	this.whoShareInput.focus();
+	// },
 
-	editAmtShared: function() {
-		console.log('click!')
-		$(this.el).children('.shares-box').children('.amtShared').addClass(".shared-editing");
-		$(this.el).children('.shares-box').children('.amtShared-edit').addClass(".shared-editing");
-		this.amtShareInput.focus();
-	},
+	// editAmtShared: function() {
+	// 	$(this.el).children('.shares-box').children('.amtShared').addClass("shared-editing");
+	// 	$(this.el).children('.shares-box').children('.amtShared-edit').addClass("shared-editing");
+	// 	this.amtShareInput.focus();
+	// },
 	
 	//methods for saving the edited contents of the page
 	exitName: function() {
@@ -133,21 +140,35 @@ window.ReceiptView = Backbone.View.extend({
 	exitWhoShared: function() {
 		$(this.el).children('.shares-box').children('.whoShared').removeClass("editing");
 		$(this.el).children('.shares-box').children('.whoShared-edit').removeClass("editing");
-		this.model.save({'shares': this.gatherShares});
+		this.model.save({'shares': this.gatherShares()[1]});
 	},
 
 	exitAmtShared: function() {
-		$(this.el).children('.shares-box').children('.amtShared').removeClass("editing");
-		$(this.el).children('.shares-box').children('.amtShared-edit').removeClass("editing");
-		this.model.save({'shares': this.gatherShares});
+		var sharesTuple = this.gatherShares();
+		if (sharesTuple[0]!== parseFloat(this.model.get('amount'))){
+			alert("Your shares don't add up the total. Please adjust accordingly.")
+		}
+		else {
+			$(this.el).children('.shares-box').children('.amtShared').removeClass("editing");
+			$(this.el).children('.shares-box').children('.amtShared-edit').removeClass("editing");
+			this.model.save({'shares': this.gatherShares()[1]});
+		}
 	},
 
 	//helper method for gathering all the information that goes in a model's 'shares' object
 	gatherShares: function(){
-		var shares = {}
-		$.each(this.$('.shares-box'), function(el){
-			shares[el.$('.whoShared-edit').val()] = el.$('.amtShared-edit').val()
+		var total=0;
+		var shares = {};
+		var targ = this.$('.shares-box');
+		$.each(targ, function(el){
+			var who = $(targ[el]).children('.whoShared-edit')
+			var much = $(targ[el]).children('.amtShared-edit')
+			for (g=0; g<who.length; g++){
+				shares[$($(targ[el]).children('.whoShared-edit')[g]).val()] = $($(targ[el]).children('.amtShared-edit')[g]).val();
+				total+=parseFloat($($(targ[el]).children('.amtShared-edit')[g]).val())
+			}
 		});
+		return [total, shares];
 	},
 
 	//methods for exiting edited content, delegating to save it
@@ -213,6 +234,17 @@ window.App = new AppView;
 
 $(document).ready(function(){
 
+	$('.who-shared').click(function(){
+		$(this).addClass("shared-editing");
+		$(this.el).children('.shares-box').children('.whoShared-edit').addClass("shared-editing");
+		this.whoShareInput.focus();
+	})
+
+	// editAmtShared: function() {
+	// 	$(this.el).children('.shares-box').children('.amtShared').addClass("shared-editing");
+	// 	$(this.el).children('.shares-box').children('.amtShared-edit').addClass("shared-editing");
+	// 	this.amtShareInput.focus();
+	// },
 
 	$('#send').click(function(){
     	var shares = {};
@@ -222,12 +254,14 @@ $(document).ready(function(){
     		shares[$($('.new-share')[i]).val()]= parseFloat($($('.share')[i]).val());
     	}
 
+    	var amt = eval($('#new-amount').val())
+
     	total = Math.round(total*Math.pow(10,2))/Math.pow(10,2);
 
-    	if (total === parseFloat($('#new-amount').val())){
+    	if (total === amt){
 		  	receipts.create({
 		    	'name': $('#new-name').val(),
-		    	'amount': $('#new-amount').val(),
+		    	'amount': amt,
 		    	'shares': shares
 		  	});
 		    $('#new-name').val('');
@@ -246,58 +280,62 @@ $(document).ready(function(){
 		}
 	});
 
-	$('#sift').click(function(){
-    	console.log('click')
-    	var owed = {}
-    	console.log(receipts)
-    	receipts.each(function(entry){
-    		var name = entry.get('name');
-			var amount = entry.get('amount');
-			var shares = entry.get('shares');
+	$('#new-amount').blur(function(){
+		$(this).val(eval($(this).val()))
+	})
 
-			//if the person who paid doesn't already have a 'tab', open one
-			if (!owed[name]){
-				owed[name] = {} 
-			}
-			//for each share of the receipt
-			$.each(shares, function(key, val){
-				//disregard the person's share
-				if (name !== key){
-					//if the current person owes the current sharer money already
-					if (owed[key]){
-						if (owed[key][name]){
-							//if the debt is higher than the current amount to be owed, just credit that amount to the existing 
-							if (owed[key][name]>val){
-								owed[key][name]-=val
-							}
-							//if the debt is lower than the current amount to be owed, adjust the current
-							else if (owed[key][name]<val){
-								owed[name][key] = val - owed[key][name]
-							}
-							//otherwise, they are equal. Yay!
-							else {
-								owed[key][name] = null
-							}
-						}
-					}
-					else if (owed[name][key]){
-						owed[name][key]+=val
-					}
-					//no previous owing relationship
-					else {
-						owed[name][key] = val
-					}
-				}
-			})
-    	})
+	//determines who owes each other what in the end
+	$('#sift').click(function(){
+        var debts = {}
+
+        receipts.each(function(entry){
+            var payer = entry.get('name');
+            var shares = entry.get('shares');
+
+            //for each share of the receipt
+            $.each(shares, function(key, val){
+                var ower = key
+                var owed = val
+
+                if (!debts[payer]){
+                    debts[payer] = {} 
+                }
+                if (payer !== ower) {
+                    if (debts[payer][ower]){
+                        if (debts[payer][ower] > owed) {
+                            debts[payer][ower] = debts[payer][ower] - owed
+                        }
+                        else if (owed > debts[payer][ower]){
+                            debts[ower][payer] = owed - debts[payer][ower]
+                            debts[payer][ower] = null
+                        }
+                        //perfectly resolved debt !!!
+                        else {
+                            debts[payer][ower] = null
+                        }
+                    }
+                    else {
+                        if (!debts[ower]){
+                                debts[ower] = {}
+                        }
+                        if (!debts[ower][payer]){
+                            debts[ower][payer] = 0
+                        }
+                        debts[ower][payer] = debts[ower][payer] + owed
+                    }
+                }
+            })
+        })
 		$('#sifted').removeClass('hidden')
 		$('#sifted').html('<h2>The Rundown</h2>')
-		$.each(owed, function(paid, shares){
-			$.each(shares, function(who, amt){
-				$('#sifted').append('<p>' + who + ' owes ' + paid + ' $' + amt + '</p>')
-			})
-			
-		})
+
+        $.each(debts, function(ower, shares){
+            $.each(shares, function(owed, amt){
+                if (amt!==null){
+                    $('#sifted').append('<p>' + ower + ' owes ' + owed + ' $' + amt + '</p>')
+                }
+            })
+        })
 		
     });
 
@@ -305,6 +343,12 @@ $(document).ready(function(){
 		$('#add').addClass('adding');
 		$('#add-button').addClass('adding');
 
+		$('#close-add').click(function(){
+			$('#add').removeClass('adding');
+			$('#add-button').removeClass('adding');
+		})
+
+		//splits the remaining total equally among all the sharers
 		$('#splitEqual').click(function(){
 			var numSplit = 0;
 			var amount = parseFloat($('#new-amount').val());

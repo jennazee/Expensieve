@@ -23,50 +23,51 @@
 		<div id="fb-root"></div>
 
 		<!-- FACEBOOK LOGIN JUNK -->
-		<script>
-		  window.fbAsyncInit = function() {
-		    // init the FB JS SDK
-		    FB.init({
-		      appId      : '193237334145655', // App ID from the App Dashboard
-		      //channelUrl : '127.0.0.1:1337/channel.html', // Channel File for x-domain communication
-		      status     : true, // check the login status upon init?
-		      cookie     : true, // set sessions cookies to allow your server to access the session?
-		      xfbml      : true  // parse XFBML tags on this page?
-		    });
+		<!-- <script>
+		//   window.fbAsyncInit = function() {
+		//     // init the FB JS SDK
+		//     FB.init({
+		//       appId      : '193237334145655', // App ID from the App Dashboard
+		//       //channelUrl : '127.0.0.1:1337/channel.html', // Channel File for x-domain communication
+		//       status     : true, // check the login status upon init?
+		//       cookie     : true, // set sessions cookies to allow your server to access the session?
+		//       xfbml      : true  // parse XFBML tags on this page?
+		//     });
 
-		    // Additional initialization code such as adding Event Listeners goes here
+		//     // Additional initialization code such as adding Event Listeners goes here
 
-		  };
+		//   };
 
-		  // Load the SDK's source Asynchronously
-		  (function(d){
-		     var js, id = 'facebook-jssdk', ref = d.getElementsByTagName('script')[0];
-		     if (d.getElementById(id)) {return;}
-		     js = d.createElement('script'); js.id = id; js.async = true;
-		     js.src = "//connect.facebook.net/en_US/all.js";
-		     ref.parentNode.insertBefore(js, ref);
-		   }(document));
-		</script>
+		//   // Load the SDK's source Asynchronously
+		//   (function(d){
+		//      var js, id = 'facebook-jssdk', ref = d.getElementsByTagName('script')[0];
+		//      if (d.getElementById(id)) {return;}
+		//      js = d.createElement('script'); js.id = id; js.async = true;
+		//      js.src = "//connect.facebook.net/en_US/all.js";
+		//      ref.parentNode.insertBefore(js, ref);
+		//    }(document));
+		// </script> -->
 
 		<div id='wrapper'>
 			<table id='expense-list'>
 				<tr id='label-box'>
-					<td><h3>Who Paid?</h3></td>
-					<td><h3>How Much?</h3></td>
-					<td><h3>Who Owes What?</h3></td>
+					<th><h3>Who Paid?</h3></th>
+					<th><h3>How Much?</h3></th>
+					<th><h3>Who Owes What?</h3></th>
 				</tr>
 			</table>
 			<div id='add-button'><span>Add a Receipt</span></div>
 			<div id='add'>
+				<span id='close-add'>x</span>
 				<div id='new-payer' class='new-line'><p>Who Paid:</p><input id='new-name' type='text'/></div>
-				<div id='new-amt' class='new-line'><p>How Much:</p><input id='new-amount' type='text'/></div>
+				<div id='new-amt' class='new-line'><p>How Much:</p><input id='new-amount' type='text'/><span id='math'>I can do math!</span></div>
 				<div id='new-splits' class='new-line'><p>Who Owes What:</p><input class='new-share' type='text'/><span>$</span><input type='number' class='share' /><span class='add-share'>+</span></div>
 
 				<div id='splitEqual'><p>Split Remaining Balance Equally</p></div>
 				<div id='send'><p>Add</p></div>
 			</div>
 			<div id='sift'>Sift it Out!</div>
-			<div id='sifted' class='hidden'></div>
+			<div id='sifted' class='hidden'><h2>The Rundown</h2></div>
 		</div>
 	</body>
 </html>

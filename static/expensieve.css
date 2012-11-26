@@ -30,6 +30,7 @@ table, #sifted {
 	box-shadow: 0 0 15px 5px #E3E3E3;
 	padding: 20px;
 	width: 800px;
+	border-spacing: 0;
 }
 
 td {
@@ -45,11 +46,11 @@ td.delcell {
 	width: 25px;
 }
 
-td.editing p, td.p.shared-editing{
+td.editing p, p.shared-editing{
 	display: none;
 }
 
-td.editing input, td.input.shared-editing{
+td.editing input, input.shared-editing{
 	display: block;
 }
 
@@ -67,6 +68,7 @@ td input {
 	width: 600px;
 	background: #CFF;
 	padding: 0 20px 20px;
+	display: none;
 }
 
 #add p {
@@ -138,7 +140,7 @@ td input {
 }
 
 
-.delete, .delete-add {
+.delete, .delete-add, #close-add {
 	width:20px;
 	height:20px;
 	border-radius:50px;
@@ -151,7 +153,7 @@ td input {
 	margin: 5px;
 }
 
-.delete:hover, .delete-add:hover {
+.delete:hover, .delete-add:hover, #close-add:hover {
 	background-color: rgb(175,10,10);
 	cursor: pointer;
 }
@@ -164,13 +166,9 @@ td input {
 	text-align: center;
 }
 
-#add-button:hover, .add-share:hover{
+#add-button:hover, .add-share:hover, #sift:hover{
 	background-color: #bbb;
 	cursor: pointer;
-}
-
-#add {
-	display: none;
 }
 
 #add.adding{
@@ -194,6 +192,32 @@ td input {
 	margin-left: 5px;
 }
 
+#math {
+position: relative;
+width: 410px;
+height: 35px;
+padding: 5px;
+background: #FFFFFF;
+border: #7F7F7F solid 0px;
+-webkit-border-radius: 10px;
+-moz-border-radius: 10px;
+border-radius: 10px;
+}
+
+#math:after 
+{
+content: "";
+position: absolute;
+top: 12px;
+left: -15px;
+border-style: solid;
+border-width: 10px 15px 10px 0;
+border-color: transparent #FFFFFF;
+display: block;
+width: 0;
+z-index: 1;
+}
+
 .whoShared, .amtShared, .whoShared-edit, .amtShared-edit {
 	float: left;
 	padding: 0 20px;
@@ -214,7 +238,6 @@ td input {
 	background: #ddd;
 	text-align: center;
 	font-size: 1.75em;
-
 }
 
 #sifted {
@@ -224,4 +247,14 @@ td input {
 
 .hidden {
 	display: none;
+}
+
+#close-add {
+	float: right;
+	position: relative;
+	top: -30px;
+}
+
+.whoShared-edit, .amtShared-edit{
+	width: 100px;
 }
