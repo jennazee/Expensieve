@@ -20,7 +20,7 @@ window.ReceiptView = Backbone.View.extend({
 	className: 'expenseLine',
 	model: Receipt,
 
-	template: _.template("<td class='name-box'><p class='name'></p> <input class='name-edit' type='text' /></td>   <td class='amt-box'><p class='amount'></p><input class='amount-edit' type='number' /></td>   <td class='shares-box'> </td>   <td class='delcell'><span class='delete'> x </span></td>"),
+	template: _.template("<td class='name-box'><p class='name'></p> <input class='name-edit' type='text' /><img class='hidden' src='static/pencil-icon.png' /></td>   <td class='amt-box'><p class='amount'></p><input class='amount-edit' type='number' /><img class='hidden' src='static/pencil-icon.png' /></td>   <td class='shares-box'> </td>   <td class='delcell'><span class='delete'> x </span></td>"),
 	whoShareTextTemp: _.template("<p class='whoShared'></p>"),
 	whoShareInputTemp: _.template("<input class='whoShared-edit' type='text' />"),
 	amtShareTextTemp: _.template("<p class='amtShared'></p>"),
@@ -96,11 +96,11 @@ window.ReceiptView = Backbone.View.extend({
     },
 
     hover: function() {
-    	$(this.el).addClass('hovered');
+    	$(this.el).children('td').children('img').removeClass('hidden');
     },
 
     unhover: function() {
-    	$(this.el).removeClass('hovered');
+    	$(this.el).children('td').children('img').addClass('hidden');
     },
 	
 	//methods for editing the contents of the page when clicked
@@ -199,6 +199,11 @@ window.ReceiptView = Backbone.View.extend({
     //deletes an entry
     clear: function() {
     	this.model.remove();
+        $('.expenseLine').each(function(i){
+            if (i%2 === 0){
+                $(this).addClass('evenbox');
+            }
+        })
     }
 })
 
@@ -222,10 +227,20 @@ window.AppView = Backbone.View.extend({
     addOne: function(item) {
       	var element = new ReceiptView({model: item}).render().el;
       	$("#expense-list").append(element);
+        $('.expenseLine').each(function(i){
+            if (i%2 === 0){
+                $(this).addClass('evenbox');
+            }
+        })
     },
     
     addAll: function() {
-      receipts.each(this.addOne);
+        receipts.each(this.addOne);
+        $('.expenseLine').each(function(i){
+            if (i%2 === 0){
+                $(this).addClass('evenbox');
+            }
+        })
     },
 
 });

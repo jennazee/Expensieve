@@ -19,6 +19,10 @@ h1, h2 {
 	font-weight: normal;
 }
 
+td p, td input {
+	display: inline;
+}
+
 h1 {
 	font-size: 3em;
 }
@@ -38,8 +42,12 @@ td {
 	text-align: center;
 }
 
-tr.hovered {
-	background-color: #f2f2f2;
+/*tr.hovered {
+	background-color: #DDFCFF;
+}*/
+
+img {
+	float: right;
 }
 
 td.delcell {
@@ -257,4 +265,8 @@ z-index: 1;
 
 .whoShared-edit, .amtShared-edit{
 	width: 100px;
+}
+
+.evenbox {
+	background-color: #f2f2f2;
 }
