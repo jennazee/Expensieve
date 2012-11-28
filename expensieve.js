@@ -33,6 +33,9 @@ app.get('/', function(req, res){
 	res.sendfile('login.html');
 });
 
+
+// *************** ACCOUNT STUFF ****************
+
 //login
 app.post('/', function(req, res){
     var passcramble;
@@ -55,7 +58,7 @@ app.post('/', function(req, res){
 app.post('/newbie', function(req,res){
     db.collection('expensieve-users').find({'email': req.body.email}).toArray(function(err, docs){
         if (docs.length === 0){
-            db.collection('expensieve-users').save({'email': req.body.email, 'pastiche': bcrypt.hashSync(req.body.pword, salt)})
+            db.collection('expensieve-users').save({'email': req.body.email, 'pastiche': bcrypt.hashSync(req.body.pword, salt), 'fname': req.body.fname})
             db.collection('expensieve-users').find({'email': req.body.email}, {'_id': true}).toArray(function(err, docs){ console.log(docs)} )
             var id = 0
             res.redirect('/users/'+ id)
@@ -66,47 +69,96 @@ app.post('/newbie', function(req,res){
     })
 })
 
-app.get('/users', function(req, res){
-    db.collection('expensieve-users').find().toArray(function(err, docs){
-        res.json(docs)
-    });
-})
+// app.get('/users', function(req, res){
+//     db.collection('expensieve-users').find().toArray(function(err, docs){
+//         res.json(docs)
+//     });
+// })
 
 app.get('/users/:id', function(req, res){
     res.send('this is my user page yayayayay')
 })
 
+
+
+
+//********* SHEET OPERATIONS *****************
+
+//go to a sheet page
+app.get('/sheet/:sheetid', function(){
+    res.sendfile('index.html')
+})
+
+//get which sheets a person is involved with
+app.get('/users/:id/sheets', function(req, res){
+    db.collection.find({'_id': new ObjectID(req.params.id)}).toArray(function(err, docs){
+        res.send(docs[0].sheets)
+    })
+})
+
+app.post('/sheets', function(err, docs){
+    var sheetid = '';
+    var chars = "0123456789abcdefghijklmnopqurstuvwxyzABCDEFGHIJKLMNOPQURSTUVWXYZ";
+    for (var i=0; i<50; i++){id=id+chars[Math.floor(Math.random() * chars.length)]};
+    Collection(db, sheetid)
+    res.redirect('/sheet/'+sheetid)
+})
+
+//get which people are involved in a sheet
+app.get('/users/:sheetid', function(req, res){
+    db.collection.find({ 'sheets': req.params.sheetid).toArray(function(err, docs){
+        var people = []
+        for (person in docs){
+            people.append({'name': person.name, 'email': person.email})
+        }
+        req.send(people)
+    })
+})
+
+//add a person to be involved in the sheet
+app.post('/users/:id/sheets/:sheetid', function(req, res){
+    db.collection.find({'_id': new ObjectID(req.params.id)}).toArray(function(err, docs){
+        var sheet_list = docs[0].sheets
+        db.collection.update({'_id': new ObjectID(req.params.id)}, {$set:{'sheets': sheet_list.append(req.params.sheetid)}})
+    })
+})
+
+
+
+
+//********** UPDATING RECEIPT FIELDS ******************
+
 //request to READ a specific receipt
-app.get('/receipts/:id', function(req, res){
-	db.collection('expensieve').find({'_id': new ObjectID(req.params.id)}).toArray(function(err, docs){
+app.get('/receipts/:sheetid/:id', function(req, res){
+	db.collection('expensieve-'+req.params.sheetid).find({'_id': new ObjectID(req.params.id)}).toArray(function(err, docs){
 		res.json(docs)
 	});
 });
 
 //request to READ the entire receipts collection
-app.get('/receipts', function(req, res){
-	db.collection('expensieve').find().toArray(function(err, docs){
+app.get('/receipts/:sheetid', function(req, res){
+	db.collection('expensieve-'+sheetid).find().toArray(function(err, docs){
 		res.json(docs)
 	});
 });
 
 //request to CREATE a new entry
-app.post('/receipts', function(req, res){
-	db.collection('expensieve').save(req.body);
+app.post('/receipts/:sheetid', function(req, res){
+	db.collection('expensieve-'+sheetid).save(req.body);
 	res.send(req.body);
 });
 
 //request to UPDATE an existing entry
-app.put('/receipts/:id', function(req, res){
+app.put('/receipts/:sheetid/:id', function(req, res){
 	req.body.amount = parseFloat(req.body.amount)
 	req.body._id = new ObjectID(req.body._id)
-	db.collection('expensieve').update({'_id': new ObjectID(req.params.id)}, req.body);
+	db.collection('expensieve-'+sheetid).update({'_id': new ObjectID(req.params.id)}, req.body);
 	res.send(req.body);
 });
 
 //request to DELETE an existing entry
-app.delete('/receipts/:id', function(req, res){
-	db.collection('expensieve').remove({_id: new ObjectID(req.params.id)});
+app.delete('/receipts/:sheetid/:id', function(req, res){
+	db.collection('expensieve-'+sheetid).remove({_id: new ObjectID(req.params.id)});
 	res.send(req.body)
 });
 
