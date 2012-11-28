@@ -40,12 +40,10 @@ app.get('/', function(req, res){
 app.post('/', function(req, res){
     var passcramble;
     db.collection('expensieve-users').find({'email': req.body.email}, {'pastiche': true}).toArray(function(err, docs){
-        console.log(docs)
         passcramble = docs[0].pastiche
-        console.log('passcramble', passcramble)
         if (bcrypt.compareSync(req.body.pword, passcramble)){
             db.collection('expensieve-users').find({'email': req.body.email}, {'_id': true}).toArray(function(err, docs){
-                res.redirect('/users/'+ docs[0]._id)
+                res.redirect('/'+ docs[0]._id)
             })
         }   
         else {
@@ -58,10 +56,10 @@ app.post('/', function(req, res){
 app.post('/newbie', function(req,res){
     db.collection('expensieve-users').find({'email': req.body.email}).toArray(function(err, docs){
         if (docs.length === 0){
-            db.collection('expensieve-users').save({'email': req.body.email, 'pastiche': bcrypt.hashSync(req.body.pword, salt), 'fname': req.body.fname})
-            db.collection('expensieve-users').find({'email': req.body.email}, {'_id': true}).toArray(function(err, docs){ console.log(docs)} )
-            var id = 0
-            res.redirect('/users/'+ id)
+            db.collection('expensieve-users').save({'email': req.body.email, 'pastiche': bcrypt.hashSync(req.body.pword, salt), 'name': req.body.fname})
+            db.collection('expensieve-users').find({'email': req.body.email}, {'_id': true}).toArray(function(err, docs){
+                res.redirect('/'+ docs[0]._id)
+            })
         }
         else {
             res.send('you already have an account')
@@ -75,8 +73,14 @@ app.post('/newbie', function(req,res){
 //     });
 // })
 
-app.get('/users/:id', function(req, res){
-    res.send('this is my user page yayayayay')
+app.get('/:id', function(req, res){
+    res.sendfile('user.html')
+})
+
+app.get('/userinfos/:id', function(req, res){
+    db.collection('expensieve-users').find({'_id': new ObjectID(req.params.id)}).toArray(function(err, docs){
+        res.send(docs)
+    })
 })
 
 
@@ -106,7 +110,7 @@ app.post('/sheets', function(err, docs){
 
 //get which people are involved in a sheet
 app.get('/users/:sheetid', function(req, res){
-    db.collection.find({ 'sheets': req.params.sheetid).toArray(function(err, docs){
+    db.collection.find({'sheets': req.params.sheetid}).toArray(function(err, docs){
         var people = []
         for (person in docs){
             people.append({'name': person.name, 'email': person.email})
