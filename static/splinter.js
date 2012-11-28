@@ -29,11 +29,11 @@ window.ReceiptView = Backbone.View.extend({
 	events: {
       	"click .name": "editWho",
       	"click .amount": "editAmt",
-      	// "click .whoShared": "editWhoShared",
-      	// "click .amtShared": "editAmtShared",
+      	"click .whoShared": "editWhoShared",
+      	"click .amtShared": "editAmtShared",
 
-      	"mouseover": 'hover',
-      	"mouseout": 'unhover',
+      	// "mouseover": 'hover',
+      	// "mouseout": 'unhover',
 
       	"click .delete": "clear",
 
@@ -95,13 +95,13 @@ window.ReceiptView = Backbone.View.extend({
       	return this;
     },
 
-    hover: function() {
-    	$(this.el).children('td').children('img').removeClass('hidden');
-    },
+    // hover: function() {
+    // 	$(this.el).children('td').children('img').removeClass('hidden');
+    // },
 
-    unhover: function() {
-    	$(this.el).children('td').children('img').addClass('hidden');
-    },
+    // unhover: function() {
+    // 	$(this.el).children('td').children('img').addClass('hidden');
+    // },
 	
 	//methods for editing the contents of the page when clicked
 	editWho: function() {
@@ -114,17 +114,17 @@ window.ReceiptView = Backbone.View.extend({
 		this.amtInput.focus();
 	},
 
-	// editWhoShared: function() {
-	// 	$(this.el).children('.shares-box').children('.whoShared').addClass("shared-editing");
-	// 	$(this.el).children('.shares-box').children('.whoShared-edit').addClass("shared-editing");
-	// 	this.whoShareInput.focus();
-	// },
+	editWhoShared: function() {
+		$(this.el).find('.whoShared').addClass("shared-editing");
+		$(this.el).find('.whoShared-edit').addClass("shared-editing");
+		this.whoShareInput.focus();
+	},
 
-	// editAmtShared: function() {
-	// 	$(this.el).children('.shares-box').children('.amtShared').addClass("shared-editing");
-	// 	$(this.el).children('.shares-box').children('.amtShared-edit').addClass("shared-editing");
-	// 	this.amtShareInput.focus();
-	// },
+	editAmtShared: function() {
+		$(this.el).find('.amtShared').addClass("shared-editing");
+		$(this.el).find('.amtShared-edit').addClass("shared-editing");
+		this.amtShareInput.focus();
+	},
 	
 	//methods for saving the edited contents of the page
 	exitName: function() {
@@ -138,19 +138,21 @@ window.ReceiptView = Backbone.View.extend({
 	},
 
 	exitWhoShared: function() {
-		$(this.el).children('.shares-box').children('.whoShared').removeClass("editing");
-		$(this.el).children('.shares-box').children('.whoShared-edit').removeClass("editing");
+        console.log('exit who shared')
+		$(this.el).find('.whoShared').removeClass("editing");
+		$(this.el).find('.whoShared-edit').removeClass("editing");
 		this.model.save({'shares': this.gatherShares()[1]});
 	},
 
 	exitAmtShared: function() {
+        console.log('exit amt shared')
 		var sharesTuple = this.gatherShares();
 		if (sharesTuple[0]!== parseFloat(this.model.get('amount'))){
 			alert("Your shares don't add up the total. Please adjust accordingly.")
 		}
 		else {
-			$(this.el).children('.shares-box').children('.amtShared').removeClass("editing");
-			$(this.el).children('.shares-box').children('.amtShared-edit').removeClass("editing");
+			$(this.el).find('.amtShared').removeClass("editing");
+			$(this.el).find('.amtShared-edit').removeClass("editing");
 			this.model.save({'shares': this.gatherShares()[1]});
 		}
 	},
@@ -222,6 +224,14 @@ window.AppView = Backbone.View.extend({
       	receipts.fetch(
       		{success: this.addAll}
       	);
+
+        $('td p').mouseover(function(){
+            $(this).find('img').removeClass('hidden')
+        })
+
+        $('td').mouseout(function(){
+            $(this).find('img').addClass('hidden')
+        })
     },
 
     addOne: function(item) {
@@ -342,7 +352,7 @@ $(document).ready(function(){
             })
         })
 		$('#sifted').removeClass('hidden')
-		$('#sifted').html('<h2>The Rundown</h2>')
+        $('#sifted').html('<h2>The Rundown</h2>')
 
         $.each(debts, function(ower, shares){
             $.each(shares, function(owed, amt){

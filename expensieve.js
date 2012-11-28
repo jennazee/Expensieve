@@ -3,6 +3,9 @@ var mongo = require('mongodb'),
   Db = mongo.Db,
   ObjectID = mongo.ObjectID;
 
+var bcrypt = require('bcrypt');
+var salt = bcrypt.genSaltSync(10);
+
 var server = new Server('localhost', 27017, {auto_reconnect: true});
 var db = new Db('test', server);
 
@@ -27,8 +30,51 @@ app.use(express.bodyParser());
 
 //request to the home page
 app.get('/', function(req, res){
-	res.sendfile('index.html');
+	res.sendfile('login.html');
 });
+
+//login
+app.post('/', function(req, res){
+    var passcramble;
+    db.collection('expensieve-users').find({'email': req.body.email}, {'pastiche': true}).toArray(function(err, docs){
+        console.log(docs)
+        passcramble = docs[0].pastiche
+        console.log('passcramble', passcramble)
+        if (bcrypt.compareSync(req.body.pword, passcramble)){
+            db.collection('expensieve-users').find({'email': req.body.email}, {'_id': true}).toArray(function(err, docs){
+                res.redirect('/users/'+ docs[0]._id)
+            })
+        }   
+        else {
+            res.sendfile('login.html')
+        }
+    });
+});
+
+//new user
+app.post('/newbie', function(req,res){
+    db.collection('expensieve-users').find({'email': req.body.email}).toArray(function(err, docs){
+        if (docs.length === 0){
+            db.collection('expensieve-users').save({'email': req.body.email, 'pastiche': bcrypt.hashSync(req.body.pword, salt)})
+            db.collection('expensieve-users').find({'email': req.body.email}, {'_id': true}).toArray(function(err, docs){ console.log(docs)} )
+            var id = 0
+            res.redirect('/users/'+ id)
+        }
+        else {
+            res.send('you already have an account')
+        }
+    })
+})
+
+app.get('/users', function(req, res){
+    db.collection('expensieve-users').find().toArray(function(err, docs){
+        res.json(docs)
+    });
+})
+
+app.get('/users/:id', function(req, res){
+    res.send('this is my user page yayayayay')
+})
 
 //request to READ a specific receipt
 app.get('/receipts/:id', function(req, res){
