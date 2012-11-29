@@ -67,11 +67,11 @@ app.post('/newbie', function(req,res){
     })
 })
 
-// app.get('/users', function(req, res){
-//     db.collection('expensieve-users').find().toArray(function(err, docs){
-//         res.json(docs)
-//     });
-// })
+app.get('/users', function(req, res){
+    db.collection('expensieve-users').find().toArray(function(err, docs){
+        res.json(docs)
+    });
+})
 
 app.get('/:id', function(req, res){
     res.sendfile('user.html')
@@ -89,18 +89,20 @@ app.get('/userinfos/:id', function(req, res){
 //********* SHEET OPERATIONS *****************
 
 //go to a sheet page
-app.get('/sheet/:sheetid', function(){
+app.get('/sheet/:sheetid', function(req,res){
     res.sendfile('index.html')
 })
 
 //get which sheets a person is involved with
 app.get('/users/:id/sheets', function(req, res){
+    console.log(req.params.id)
     db.collection.find({'_id': new ObjectID(req.params.id)}).toArray(function(err, docs){
         res.send(docs[0].sheets)
     })
 })
 
-app.post('/sheets', function(err, docs){
+//add a new sheet
+app.post('/sheets', function(req, res){
     var sheetid = '';
     var chars = "0123456789abcdefghijklmnopqurstuvwxyzABCDEFGHIJKLMNOPQURSTUVWXYZ";
     for (var i=0; i<50; i++){id=id+chars[Math.floor(Math.random() * chars.length)]};
@@ -110,20 +112,27 @@ app.post('/sheets', function(err, docs){
 
 //get which people are involved in a sheet
 app.get('/users/:sheetid', function(req, res){
-    db.collection.find({'sheets': req.params.sheetid}).toArray(function(err, docs){
+    db.collection('expensieve-users').find({'sheets': req.params.sheetid}).toArray(function(err, docs){
         var people = []
         for (person in docs){
-            people.append({'name': person.name, 'email': person.email})
+            people.push({'name': docs[person].name, 'email': docs[person].email})
         }
-        req.send(people)
+        res.json(people)
     })
 })
 
 //add a person to be involved in the sheet
-app.post('/users/:id/sheets/:sheetid', function(req, res){
-    db.collection.find({'_id': new ObjectID(req.params.id)}).toArray(function(err, docs){
-        var sheet_list = docs[0].sheets
-        db.collection.update({'_id': new ObjectID(req.params.id)}, {$set:{'sheets': sheet_list.append(req.params.sheetid)}})
+app.post('/sheet/:sheetid', function(req, res){
+    db.collection('expensieve-users').find({'email': req.body.sharer_email}).toArray(function(err, docs){
+        if (docs.length>0){
+            db.collection('expensieve-users').update({'email': req.body.sharer_email, 'sheets': {$nin: [req.params.sheetid]}}, {$push:{'sheets': req.params.sheetid}})
+            db.collection('expensieve-users').find({'email': req.body.sharer_email}).toArray(function(err, docs){
+                res.json(docs)
+            })
+        }
+        else {
+            res.json([])
+        }
     })
 })
 
@@ -141,7 +150,7 @@ app.get('/receipts/:sheetid/:id', function(req, res){
 
 //request to READ the entire receipts collection
 app.get('/receipts/:sheetid', function(req, res){
-	db.collection('expensieve-'+sheetid).find().toArray(function(err, docs){
+	db.collection('expensieve-'+req.params.sheetid).find().toArray(function(err, docs){
 		res.json(docs)
 	});
 });

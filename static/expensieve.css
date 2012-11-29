@@ -6,7 +6,7 @@ body, header{
 	padding: 0;
 }
 
-h3 {
+table h3 {
 	float: left;
 	font-weight: normal;
 	text-align: center;
@@ -27,14 +27,18 @@ h1 {
 	font-size: 3em;
 }
 
-table, #sifted {
-	margin: 0 auto;
+table, #sifted , #involved{
+	margin: 10px auto 25px;
 	background-color: white;
 	border-radius: 10px;
 	box-shadow: 0 0 15px 5px #E3E3E3;
 	padding: 20px;
 	width: 800px;
 	border-spacing: 0;
+}
+
+#involved label {
+	display: block;
 }
 
 td {

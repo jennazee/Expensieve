@@ -4,14 +4,14 @@
 	<head>
 		<title>Expensieve</title>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-		<script src="static/jquery-1.7.2.min.js" type="text/javascript"></script>
-		<script src="static/underscore-min.js" type="text/javascript"></script>
-		<script src="static/backbone-min.js" type="text/javascript"></script>
+		<script src="../static/jquery-1.7.2.min.js" type="text/javascript"></script>
+		<script src="../static/underscore-min.js" type="text/javascript"></script>
+		<script src="../static/backbone-min.js" type="text/javascript"></script>
 		
 		
-
-		<script type="text/javascript" src='static/splinter.js'></script>
-		<link rel="stylesheet" type="text/css" href="static/expensieve.css">
+		<script type="text/javascript" src='../static/splinter.js'></script>
+		<script type="text/javascript" src='../static/involved.js'></script>
+		<link rel="stylesheet" type="text/css" href="../static/expensieve.css">
 	</head>
 
 	<header>
@@ -25,9 +25,9 @@
 			<div id='involved'>
 				<h3>People Involved</h3>
 				<ul id='involved-list'></ul>
-				<form id='add-involved' method='post'>
-					<label>Sharer's Name: <input type='text' name='sharer-name'/></label>
-					<label>Sharer's email address: <input type='text' name='sharer-email'/></label>
+				<form id='add-involved' method='post' >
+					<label>Sharer's Name: <input id='share-name' type='text' name='sharer_name'/></label>
+					<label>Sharer's email address: <input id='share-email' type='text' name='sharer_email'/></label>
 					<input type="submit" value="submit">
 				</form>
 			</div>
@@ -53,4 +53,5 @@
 			<div id='sifted' class='hidden'><h2>The Rundown</h2></div>
 		</div>
 	</body>
+
 </html>
