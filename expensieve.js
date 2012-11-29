@@ -95,19 +95,19 @@ app.get('/sheet/:sheetid', function(req,res){
 
 //get which sheets a person is involved with
 app.get('/users/:id/sheets', function(req, res){
-    console.log(req.params.id)
     db.collection.find({'_id': new ObjectID(req.params.id)}).toArray(function(err, docs){
         res.send(docs[0].sheets)
     })
 })
 
-//add a new sheet
+//create a new sheet
 app.post('/sheets', function(req, res){
     var sheetid = '';
     var chars = "0123456789abcdefghijklmnopqurstuvwxyzABCDEFGHIJKLMNOPQURSTUVWXYZ";
-    for (var i=0; i<50; i++){id=id+chars[Math.floor(Math.random() * chars.length)]};
-    Collection(db, sheetid)
-    res.redirect('/sheet/'+sheetid)
+    for (var i=0; i<50; i++){sheetid=sheetid+chars[Math.floor(Math.random() * chars.length)]};
+    db.createCollection(sheetid,function(){})
+    db.collection('expensieve-users').update({'_id': new ObjectID(req.body.id)}, {$push:{'sheets': sheetid}})
+    res.send(sheetid)
 })
 
 //get which people are involved in a sheet
@@ -123,10 +123,10 @@ app.get('/users/:sheetid', function(req, res){
 
 //add a person to be involved in the sheet
 app.post('/sheet/:sheetid', function(req, res){
-    db.collection('expensieve-users').find({'email': req.body.sharer_email}).toArray(function(err, docs){
+    db.collection('expensieve-users').find({'email': req.body.email}).toArray(function(err, docs){
         if (docs.length>0){
-            db.collection('expensieve-users').update({'email': req.body.sharer_email, 'sheets': {$nin: [req.params.sheetid]}}, {$push:{'sheets': req.params.sheetid}})
-            db.collection('expensieve-users').find({'email': req.body.sharer_email}).toArray(function(err, docs){
+            db.collection('expensieve-users').update({'email': req.body.email, 'sheets': {$nin: [req.params.sheetid]}}, {$push:{'sheets': req.params.sheetid}})
+            db.collection('expensieve-users').find({'email': req.body.email}).toArray(function(err, docs){
                 res.json(docs)
             })
         }
@@ -135,8 +135,6 @@ app.post('/sheet/:sheetid', function(req, res){
         }
     })
 })
-
-
 
 
 //********** UPDATING RECEIPT FIELDS ******************
@@ -157,7 +155,7 @@ app.get('/receipts/:sheetid', function(req, res){
 
 //request to CREATE a new entry
 app.post('/receipts/:sheetid', function(req, res){
-	db.collection('expensieve-'+sheetid).save(req.body);
+	db.collection('expensieve-'+req.params.sheetid).save(req.body);
 	res.send(req.body);
 });
 
@@ -165,13 +163,13 @@ app.post('/receipts/:sheetid', function(req, res){
 app.put('/receipts/:sheetid/:id', function(req, res){
 	req.body.amount = parseFloat(req.body.amount)
 	req.body._id = new ObjectID(req.body._id)
-	db.collection('expensieve-'+sheetid).update({'_id': new ObjectID(req.params.id)}, req.body);
+	db.collection('expensieve-'+req.params.sheetid).update({'_id': new ObjectID(req.params.id)}, req.body);
 	res.send(req.body);
 });
 
 //request to DELETE an existing entry
 app.delete('/receipts/:sheetid/:id', function(req, res){
-	db.collection('expensieve-'+sheetid).remove({_id: new ObjectID(req.params.id)});
+	db.collection('expensieve-'+req.params.sheetid).remove({_id: new ObjectID(req.params.id)});
 	res.send(req.body)
 });
 
