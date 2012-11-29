@@ -274,3 +274,15 @@ z-index: 1;
 .evenbox {
 	background-color: #f2f2f2;
 }
+
+#user-infos input {
+	display: none;
+}
+
+#user-infos input.edit {
+	display: inline;
+}
+
+#user-infos p.edit {
+	display: none;
+}
